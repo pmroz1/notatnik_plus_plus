@@ -15,8 +15,17 @@ import { displayTitle } from './tree';
         <p class="mt-1 text-muted">Pick up where you left off or start something new.</p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <button type="button" class="btn btn-primary" (click)="actions.create()" data-testid="home-new-page">New page</button>
-        <span class="self-center text-sm text-muted">or press <kbd class="kbd">Ctrl K</kbd> to search</span>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="actions.create()"
+          data-testid="home-new-page"
+        >
+          New page
+        </button>
+        <span class="self-center text-sm text-muted"
+          >or press <kbd class="kbd">Ctrl K</kbd> to search</span
+        >
       </div>
       @if (store.recent().length) {
         <section aria-labelledby="home-recent">
@@ -24,7 +33,10 @@ import { displayTitle } from './tree';
           <ul class="grid gap-2 sm:grid-cols-2">
             @for (p of store.recent(); track p.id) {
               <li>
-                <a [routerLink]="['/p', p.id]" class="flex items-center gap-2 rounded-lg border border-line p-3 hover:bg-hover">
+                <a
+                  [routerLink]="['/p', p.id]"
+                  class="flex items-center gap-2 rounded-lg border border-line p-3 hover:bg-hover"
+                >
                   <span aria-hidden="true">{{ p.icon ?? '📄' }}</span>
                   <span class="truncate">{{ title(p) }}</span>
                 </a>

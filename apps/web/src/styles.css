@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "@angular/cdk/overlay-prebuilt.css";
+@import 'tailwindcss';
+@import '@angular/cdk/overlay-prebuilt.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -39,9 +39,11 @@
   --color-hover: var(--hover);
   --color-accent: var(--accent);
   --color-danger: var(--danger);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 @layer base {
@@ -58,7 +60,7 @@
     outline-offset: 2px;
   }
   button:not(:disabled),
-  [role="option"] {
+  [role='option'] {
     cursor: pointer;
   }
 }
@@ -192,7 +194,7 @@
 .notes-editor blockquote {
   @apply border-l-4 border-ink/70 pl-4;
 }
-.notes-editor ul:not([data-type="taskList"]) {
+.notes-editor ul:not([data-type='taskList']) {
   @apply list-disc pl-6;
 }
 .notes-editor ol {
@@ -201,22 +203,22 @@
 .notes-editor li > p {
   margin: 0;
 }
-.notes-editor ul[data-type="taskList"] {
+.notes-editor ul[data-type='taskList'] {
   @apply pl-1;
 }
-.notes-editor ul[data-type="taskList"] li {
+.notes-editor ul[data-type='taskList'] li {
   @apply flex items-start gap-2;
 }
-.notes-editor ul[data-type="taskList"] li > label {
+.notes-editor ul[data-type='taskList'] li > label {
   @apply mt-1 shrink-0 select-none;
 }
-.notes-editor ul[data-type="taskList"] li > label input {
+.notes-editor ul[data-type='taskList'] li > label input {
   @apply h-4 w-4 accent-[var(--accent)];
 }
-.notes-editor ul[data-type="taskList"] li > div {
+.notes-editor ul[data-type='taskList'] li > div {
   @apply min-w-0 flex-1;
 }
-.notes-editor ul[data-type="taskList"] li[data-checked="true"] > div {
+.notes-editor ul[data-type='taskList'] li[data-checked='true'] > div {
   @apply text-muted line-through;
 }
 .notes-editor hr {
@@ -239,7 +241,7 @@
   @apply bg-hover text-left font-semibold;
 }
 .notes-editor .selectedCell::after {
-  content: "";
+  content: '';
   @apply pointer-events-none absolute inset-0 bg-accent/15;
 }
 .notes-editor .ProseMirror-gapcursor::after {

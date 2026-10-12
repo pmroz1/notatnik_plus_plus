@@ -27,14 +27,25 @@
       <kbd class="kbd">Ctrl K</kbd>
     </button>
     <button type="button" class="nav-item" (click)="newPage()" data-testid="new-page">
-      <span aria-hidden="true">＋</span>
+      <span aria-hidden="true">+</span>
       <span class="flex-1 text-left">New page</span>
     </button>
-    <a routerLink="/settings" routerLinkActive="is-selected" class="nav-item" (click)="navigated.emit()">
+    <a
+      routerLink="/settings"
+      routerLinkActive="is-selected"
+      class="nav-item"
+      (click)="navigated.emit()"
+    >
       <span aria-hidden="true">⚙</span>
       <span class="flex-1">Settings</span>
     </a>
-    <a routerLink="/trash" routerLinkActive="is-selected" class="nav-item" (click)="navigated.emit()" data-testid="trash-link">
+    <a
+      routerLink="/trash"
+      routerLinkActive="is-selected"
+      class="nav-item"
+      (click)="navigated.emit()"
+      data-testid="trash-link"
+    >
       <span aria-hidden="true">🗑</span>
       <span class="flex-1">Trash</span>
       @if (store.trash().length) {
@@ -56,7 +67,9 @@
                 [class.is-selected]="selectedId() === p.id"
                 (click)="navigated.emit()"
               >
-                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{
+                  p.icon ?? '📄'
+                }}</span>
                 <span class="truncate">{{ title(p) }}</span>
               </a>
             </li>
@@ -77,7 +90,9 @@
                 [class.is-selected]="selectedId() === p.id"
                 (click)="navigated.emit()"
               >
-                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{
+                  p.icon ?? '📄'
+                }}</span>
                 <span class="truncate">{{ title(p) }}</span>
               </a>
             </li>
@@ -113,7 +128,9 @@
                   [class.is-selected]="selectedId() === p.id"
                   (click)="navigated.emit()"
                 >
-                  <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                  <span class="w-5 shrink-0 text-center" aria-hidden="true">{{
+                    p.icon ?? '📄'
+                  }}</span>
                   <span class="truncate">{{ title(p) }}</span>
                 </a>
               </li>
@@ -126,8 +143,14 @@
     <section aria-labelledby="pages-heading">
       <div class="flex items-center">
         <h2 id="pages-heading" class="section-heading flex-1">Pages</h2>
-        <button type="button" class="icon-btn h-6 w-6" aria-label="Add top-level page" title="Add page" (click)="newPage()">
-          ＋
+        <button
+          type="button"
+          class="icon-btn h-6 w-6"
+          aria-label="Add top-level page"
+          title="Add page"
+          (click)="newPage()"
+        >
+          +
         </button>
       </div>
 
@@ -147,9 +170,13 @@
           <li
             class="tree-row group relative flex items-center rounded-md"
             [class.is-selected]="selectedId() === node.page.id"
-            [class.drop-before]="dropHint()?.id === node.page.id && dropHint()?.position === 'before'"
+            [class.drop-before]="
+              dropHint()?.id === node.page.id && dropHint()?.position === 'before'
+            "
             [class.drop-after]="dropHint()?.id === node.page.id && dropHint()?.position === 'after'"
-            [class.drop-inside]="dropHint()?.id === node.page.id && dropHint()?.position === 'inside'"
+            [class.drop-inside]="
+              dropHint()?.id === node.page.id && dropHint()?.position === 'inside'
+            "
             [class.opacity-50]="dragId() === node.page.id"
             [style.padding-left.px]="indent(node)"
             [attr.data-page-id]="node.page.id"
@@ -165,12 +192,18 @@
               <button
                 type="button"
                 class="flex h-6 w-5 shrink-0 items-center justify-center rounded text-muted hover:bg-hover"
-                [attr.aria-label]="(store.isExpanded(node.page.id) ? 'Collapse ' : 'Expand ') + title(node.page)"
+                [attr.aria-label]="
+                  (store.isExpanded(node.page.id) ? 'Collapse ' : 'Expand ') + title(node.page)
+                "
                 [attr.aria-expanded]="store.isExpanded(node.page.id)"
                 tabindex="-1"
                 (click)="toggle(node, $event)"
               >
-                <span class="text-[10px] transition-transform" [class.rotate-90]="store.isExpanded(node.page.id)">▶</span>
+                <span
+                  class="text-[10px] transition-transform"
+                  [class.rotate-90]="store.isExpanded(node.page.id)"
+                  >▶</span
+                >
               </button>
             } @else {
               <span class="w-5 shrink-0"></span>
@@ -200,7 +233,9 @@
                 (dblclick)="startRename(node.page)"
                 (click)="navigated.emit()"
               >
-                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ node.page.icon ?? '📄' }}</span>
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{
+                  node.page.icon ?? '📄'
+                }}</span>
                 <span class="truncate">{{ title(node.page) }}</span>
               </a>
               <div class="row-actions flex shrink-0 items-center pr-1">
@@ -222,7 +257,7 @@
                   title="Add subpage"
                   (click)="newPage(node.page.id)"
                 >
-                  ＋
+                  +
                 </button>
               </div>
             }
@@ -235,22 +270,58 @@
 
 <ng-template #rowMenu let-page>
   <div class="menu" cdkMenu data-testid="row-menu-panel">
-    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="startRename(page)">Rename <kbd class="kbd ml-auto">F2</kbd></button>
-    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="newPage(page.id)">Add subpage</button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="startRename(page)">
+      Rename <kbd class="kbd ml-auto">F2</kbd>
+    </button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="newPage(page.id)">
+      Add subpage
+    </button>
     <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.toggleFavorite(page.id)">
       {{ page.isFavorite ? 'Remove from favorites' : 'Add to favorites' }}
     </button>
-    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.duplicate(page.id)">Duplicate</button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.duplicate(page.id)">
+      Duplicate
+    </button>
     <hr class="my-1 border-line" />
-    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'up')" (cdkMenuItemTriggered)="moveBy(page, 'up')">Move up</button>
-    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'down')" (cdkMenuItemTriggered)="moveBy(page, 'down')">Move down</button>
-    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'indent')" (cdkMenuItemTriggered)="moveBy(page, 'indent')">
+    <button
+      class="menu-item"
+      cdkMenuItem
+      [cdkMenuItemDisabled]="!canMove(page, 'up')"
+      (cdkMenuItemTriggered)="moveBy(page, 'up')"
+    >
+      Move up
+    </button>
+    <button
+      class="menu-item"
+      cdkMenuItem
+      [cdkMenuItemDisabled]="!canMove(page, 'down')"
+      (cdkMenuItemTriggered)="moveBy(page, 'down')"
+    >
+      Move down
+    </button>
+    <button
+      class="menu-item"
+      cdkMenuItem
+      [cdkMenuItemDisabled]="!canMove(page, 'indent')"
+      (cdkMenuItemTriggered)="moveBy(page, 'indent')"
+    >
       Nest under previous
     </button>
-    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'outdent')" (cdkMenuItemTriggered)="moveBy(page, 'outdent')">
+    <button
+      class="menu-item"
+      cdkMenuItem
+      [cdkMenuItemDisabled]="!canMove(page, 'outdent')"
+      (cdkMenuItemTriggered)="moveBy(page, 'outdent')"
+    >
       Move out one level
     </button>
     <hr class="my-1 border-line" />
-    <button class="menu-item text-danger" cdkMenuItem (cdkMenuItemTriggered)="actions.moveToTrash(page.id)">Move to trash</button>
+    <button
+      class="menu-item text-danger"
+      cdkMenuItem
+      (cdkMenuItemTriggered)="actions.moveToTrash(page.id)"
+    >
+      Move to trash
+    </button>
   </div>
 </ng-template>

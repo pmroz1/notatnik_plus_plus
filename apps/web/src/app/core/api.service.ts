@@ -88,9 +88,7 @@ export class ApiService {
 
   deletePermanently(id: string): Promise<{ deletedPages: number }> {
     return firstValueFrom(
-      this.http.delete<{ deletedPages: number }>(
-        `/api/pages/${encodeURIComponent(id)}/permanent`,
-      ),
+      this.http.delete<{ deletedPages: number }>(`/api/pages/${encodeURIComponent(id)}/permanent`),
     );
   }
 
@@ -127,8 +125,6 @@ export class ApiService {
   }
 
   createBackup(): Promise<{ file: string; sizeBytes: number }> {
-    return firstValueFrom(
-      this.http.post<{ file: string; sizeBytes: number }>('/api/backup', null),
-    );
+    return firstValueFrom(this.http.post<{ file: string; sizeBytes: number }>('/api/backup', null));
   }
 }

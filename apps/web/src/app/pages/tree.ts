@@ -78,7 +78,10 @@ export function displayTitle(page: Pick<PageSummary, 'title'>): string {
 }
 
 /** Live children of `parentId` (null = top level), in display order. */
-export function liveChildren(pages: readonly PageSummary[], parentId: string | null): PageSummary[] {
+export function liveChildren(
+  pages: readonly PageSummary[],
+  parentId: string | null,
+): PageSummary[] {
   return pages
     .filter((p) => !p.deletedAt && p.parentId === parentId)
     .sort((a, b) => a.sortOrder - b.sortOrder || a.createdAt.localeCompare(b.createdAt));
@@ -152,7 +155,10 @@ export function siblingMove(
         return null;
       }
       const parentSiblings = liveChildren(pages, parent.parentId);
-      return { parentId: parent.parentId, index: parentSiblings.findIndex((p) => p.id === parent.id) + 1 };
+      return {
+        parentId: parent.parentId,
+        index: parentSiblings.findIndex((p) => p.id === parent.id) + 1,
+      };
     }
   }
 }

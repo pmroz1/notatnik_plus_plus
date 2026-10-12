@@ -16,23 +16,48 @@ import { displayTitle } from './tree';
         Deleted pages keep their subpages and content until you delete them forever.
       </p>
       @if (!entries().length) {
-        <p class="mt-10 rounded-lg border border-dashed border-line p-6 text-center text-muted" data-testid="trash-empty">
+        <p
+          class="mt-10 rounded-lg border border-dashed border-line p-6 text-center text-muted"
+          data-testid="trash-empty"
+        >
           Trash is empty.
         </p>
       } @else {
-        <ul class="mt-6 divide-y divide-line rounded-lg border border-line" data-testid="trash-list">
+        <ul
+          class="mt-6 divide-y divide-line rounded-lg border border-line"
+          data-testid="trash-list"
+        >
           @for (e of entries(); track e.page.id) {
             <li class="flex flex-wrap items-center gap-3 px-4 py-3">
-              <a [routerLink]="['/p', e.page.id]" class="flex min-w-0 flex-1 items-center gap-2 hover:underline">
+              <a
+                [routerLink]="['/p', e.page.id]"
+                class="flex min-w-0 flex-1 items-center gap-2 hover:underline"
+              >
                 <span aria-hidden="true">{{ e.page.icon ?? '📄' }}</span>
                 <span class="truncate">{{ title(e.page) }}</span>
                 @if (e.descendants) {
-                  <span class="shrink-0 text-xs text-muted">+{{ e.descendants }} subpage{{ e.descendants === 1 ? '' : 's' }}</span>
+                  <span class="shrink-0 text-xs text-muted"
+                    >+{{ e.descendants }} subpage{{ e.descendants === 1 ? '' : 's' }}</span
+                  >
                 }
               </a>
-              <span class="text-xs text-muted">{{ e.page.deletedAt?.slice(0, 16)?.replace('T', ' ') }} UTC</span>
-              <button type="button" class="btn btn-sm" (click)="actions.restore(e.page.id)" data-testid="trash-restore">Restore</button>
-              <button type="button" class="btn btn-sm btn-danger" (click)="deleteForever(e.page.id, title(e.page), e.descendants)" data-testid="trash-delete">
+              <span class="text-xs text-muted"
+                >{{ e.page.deletedAt?.slice(0, 16)?.replace('T', ' ') }} UTC</span
+              >
+              <button
+                type="button"
+                class="btn btn-sm"
+                (click)="actions.restore(e.page.id)"
+                data-testid="trash-restore"
+              >
+                Restore
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                (click)="deleteForever(e.page.id, title(e.page), e.descendants)"
+                data-testid="trash-delete"
+              >
                 Delete forever
               </button>
             </li>

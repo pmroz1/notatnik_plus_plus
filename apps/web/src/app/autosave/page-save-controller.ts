@@ -9,7 +9,11 @@ export type SaveOutcome =
   | { kind: 'conflict'; currentRevision: number }
   | { kind: 'error'; transient: boolean; message: string };
 
-export type SaveFn = (pageId: string, doc: DocNode, expectedRevision: number) => Promise<SaveOutcome>;
+export type SaveFn = (
+  pageId: string,
+  doc: DocNode,
+  expectedRevision: number,
+) => Promise<SaveOutcome>;
 
 export interface SaveControllerOptions {
   debounceMs: number;
@@ -224,13 +228,11 @@ export class PageSaveController {
     const expected = this.revision;
     this.status.set('saving');
     this.inFlight = this.saveFn(this.pageId, doc, expected)
-      .catch(
-        (err: unknown): SaveOutcome => ({
-          kind: 'error',
-          transient: true,
-          message: err instanceof Error ? err.message : 'Save failed',
-        }),
-      )
+      .catch((err: unknown): SaveOutcome => ({
+        kind: 'error',
+        transient: true,
+        message: err instanceof Error ? err.message : 'Save failed',
+      }))
       .then((outcome) => {
         this.inFlight = null;
         this.handleOutcome(outcome, version);

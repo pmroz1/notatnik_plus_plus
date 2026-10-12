@@ -33,7 +33,14 @@ const MAX_VISUAL_DEPTH = 12;
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, CdkMenu, CdkMenuItem, CdkMenuTrigger, CdkContextMenuTrigger],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+    CdkContextMenuTrigger,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sidebar.component.html',
 })
@@ -171,7 +178,9 @@ export class SidebarComponent {
   }
 
   private focusRow(id: string): void {
-    setTimeout(() => document.querySelector<HTMLElement>(`[data-tree-link="${CSS.escape(id)}"]`)?.focus());
+    setTimeout(() =>
+      document.querySelector<HTMLElement>(`[data-tree-link="${CSS.escape(id)}"]`)?.focus(),
+    );
   }
 
   // ----- moves -----

@@ -88,7 +88,10 @@ export class PageActions {
       await this.api.softDelete(id);
       await this.store.refresh();
       const current = this.router.url;
-      const affected = this.store.all().filter((p) => p.deletedRootId === id).map((p) => p.id);
+      const affected = this.store
+        .all()
+        .filter((p) => p.deletedRootId === id)
+        .map((p) => p.id);
       if (affected.some((pid) => current.startsWith(`/p/${pid}`))) {
         await this.router.navigate(['/']);
       }
@@ -117,7 +120,9 @@ export class PageActions {
       this.saves.discard(id);
       await this.store.refresh();
       this.toasts.success(
-        res.deletedPages === 1 ? 'Page deleted forever' : `${res.deletedPages} pages deleted forever`,
+        res.deletedPages === 1
+          ? 'Page deleted forever'
+          : `${res.deletedPages} pages deleted forever`,
       );
     } catch (err) {
       this.toasts.error(errorMessage(err, 'Could not delete page'));

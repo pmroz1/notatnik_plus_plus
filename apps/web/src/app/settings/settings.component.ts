@@ -22,7 +22,9 @@ const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
         <h2 id="appearance-h" class="text-lg font-semibold">Appearance</h2>
         <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Theme">
           @for (opt of themeOptions; track opt.value) {
-            <label class="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 has-[:checked]:border-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent">
+            <label
+              class="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-3 py-2 has-[:checked]:border-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent"
+            >
               <input
                 type="radio"
                 name="theme"
@@ -41,11 +43,13 @@ const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
       <section aria-labelledby="export-h" class="flex flex-col gap-3">
         <h2 id="export-h" class="text-lg font-semibold">Export</h2>
         <p class="text-sm text-muted">
-          Download every page (including the trash) with hierarchy, metadata, tags and the full editor
-          JSON. This is the lossless backup format and can be imported again below.
+          Download every page (including the trash) with hierarchy, metadata, tags and the full
+          editor JSON. This is the lossless backup format and can be imported again below.
         </p>
         <div>
-          <a class="btn" href="/api/export" download data-testid="export-link">Download workspace JSON</a>
+          <a class="btn" href="/api/export" download data-testid="export-link"
+            >Download workspace JSON</a
+          >
         </div>
       </section>
 
@@ -53,8 +57,8 @@ const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
         <h2 id="import-h" class="text-lg font-semibold">Import</h2>
         <p class="text-sm text-muted">
           <strong>Merge</strong> adds the imported pages as new copies (fresh IDs, nothing is
-          overwritten). <strong>Replace</strong> deletes all current pages first; the server writes a
-          safety backup of the database before replacing.
+          overwritten). <strong>Replace</strong> deletes all current pages first; the server writes
+          a safety backup of the database before replacing.
         </p>
         <div class="flex flex-wrap items-center gap-3">
           <label class="flex items-center gap-2 text-sm">
@@ -86,7 +90,15 @@ const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
           directory. See docs/backup-restore.md for restoring.
         </p>
         <div class="flex flex-wrap items-center gap-3">
-          <button type="button" class="btn" [disabled]="busy()" (click)="backup()" data-testid="backup-button">Create backup now</button>
+          <button
+            type="button"
+            class="btn"
+            [disabled]="busy()"
+            (click)="backup()"
+            data-testid="backup-button"
+          >
+            Create backup now
+          </button>
           @if (lastBackup(); as b) {
             <span class="text-sm text-muted break-all">Saved to {{ b }}</span>
           }
@@ -97,7 +109,9 @@ const MAX_IMPORT_BYTES = 64 * 1024 * 1024;
         <h2 id="account-h" class="text-lg font-semibold">Account</h2>
         <p class="text-sm text-muted">Signed in as {{ auth.username() }}.</p>
         <div>
-          <button type="button" class="btn" (click)="logout()" data-testid="logout">Sign out</button>
+          <button type="button" class="btn" (click)="logout()" data-testid="logout">
+            Sign out
+          </button>
         </div>
       </section>
     </div>
@@ -159,7 +173,9 @@ export class SettingsComponent {
     this.busy.set(true);
     try {
       if (mode === 'replace' && !(await this.saves.flushAll())) {
-        this.toasts.error('Some pages have unsaved changes. Resolve them before replacing everything.');
+        this.toasts.error(
+          'Some pages have unsaved changes. Resolve them before replacing everything.',
+        );
         return;
       }
       const res = await this.api.importWorkspace(data, mode);

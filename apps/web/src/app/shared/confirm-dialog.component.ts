@@ -24,7 +24,9 @@ import { ConfirmService } from './confirm.service';
       @if (confirm.current(); as req) {
         <form method="dialog" class="flex flex-col gap-4 p-5" (submit)="submit($event)">
           <h2 id="confirm-title" class="text-base font-semibold">{{ req.title }}</h2>
-          <p id="confirm-message" class="whitespace-pre-line text-sm text-muted">{{ req.message }}</p>
+          <p id="confirm-message" class="whitespace-pre-line text-sm text-muted">
+            {{ req.message }}
+          </p>
           @if (req.requireText) {
             <label class="flex flex-col gap-1 text-sm">
               <span>
@@ -41,7 +43,12 @@ import { ConfirmService } from './confirm.service';
             </label>
           }
           <div class="flex justify-end gap-2">
-            <button type="button" class="btn" (click)="confirm.answer(false)" data-testid="confirm-cancel">
+            <button
+              type="button"
+              class="btn"
+              (click)="confirm.answer(false)"
+              data-testid="confirm-cancel"
+            >
               {{ req.cancelLabel ?? 'Cancel' }}
             </button>
             <button

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  inject,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -30,7 +24,11 @@ const SIDEBAR_KEY = 'notatnik.sidebar';
       >Skip to content</a
     >
     @if (isMobile() && mobileOpen()) {
-      <div class="fixed inset-0 z-30 bg-black/40" aria-hidden="true" (click)="mobileOpen.set(false)"></div>
+      <div
+        class="fixed inset-0 z-30 bg-black/40"
+        aria-hidden="true"
+        (click)="mobileOpen.set(false)"
+      ></div>
     }
     @if (sidebarVisible()) {
       <aside
@@ -117,7 +115,12 @@ export class ShellComponent implements OnInit {
     } else if (mod && event.key === '\\') {
       event.preventDefault();
       this.toggleSidebar();
-    } else if (event.key === 'Escape' && this.isMobile() && this.mobileOpen() && !this.searchOpen()) {
+    } else if (
+      event.key === 'Escape' &&
+      this.isMobile() &&
+      this.mobileOpen() &&
+      !this.searchOpen()
+    ) {
       this.mobileOpen.set(false);
     }
   }

@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  afterNextRender,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../core/auth.service';
@@ -23,7 +31,13 @@ import { errorMessage } from '../core/api-error';
         </div>
         <label class="flex flex-col gap-1 text-sm">
           Username
-          <input class="input" formControlName="username" autocomplete="username" data-testid="login-username" />
+          <input
+            #username
+            class="input"
+            formControlName="username"
+            autocomplete="username"
+            data-testid="login-username"
+          />
         </label>
         <label class="flex flex-col gap-1 text-sm">
           Password
@@ -36,14 +50,25 @@ import { errorMessage } from '../core/api-error';
           />
         </label>
         @if (error(); as e) {
-          <p class="rounded-md bg-red-500/10 px-3 py-2 text-sm text-danger" role="alert" data-testid="login-error">{{ e }}</p>
+          <p
+            class="rounded-md bg-red-500/10 px-3 py-2 text-sm text-danger"
+            role="alert"
+            data-testid="login-error"
+          >
+            {{ e }}
+          </p>
         }
-        <button type="submit" class="btn btn-primary h-10" [disabled]="busy()" data-testid="login-submit">
+        <button
+          type="submit"
+          class="btn btn-primary h-10"
+          [disabled]="busy()"
+          data-testid="login-submit"
+        >
           {{ busy() ? 'Signing in…' : 'Sign in' }}
         </button>
         <p class="text-xs text-muted">
           No account yet? Create one on the server with
-          <code class="rounded bg-hover px-1">notatnik-api create-user</code>.
+          <code class="rounded bg-hover px-1">notes-api create-user</code>.
         </p>
       </form>
     </main>
@@ -60,6 +85,11 @@ export class LoginComponent {
   });
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
+  private readonly usernameInput = viewChild.required<ElementRef<HTMLInputElement>>('username');
+
+  constructor() {
+    afterNextRender(() => this.usernameInput().nativeElement.focus());
+  }
 
   async submit(): Promise<void> {
     if (this.form.invalid || this.busy()) {
@@ -73,7 +103,10 @@ export class LoginComponent {
       await this.auth.login(username, password);
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       // Only allow internal app paths as redirect targets.
-      const target = returnUrl && /^\/(?!\/)/.test(returnUrl) && !returnUrl.startsWith('/login') ? returnUrl : '/';
+      const target =
+        returnUrl && /^\/(?!\/)/.test(returnUrl) && !returnUrl.startsWith('/login')
+          ? returnUrl
+          : '/';
       await this.router.navigateByUrl(target);
     } catch (err) {
       if (err instanceof HttpErrorResponse && err.status === 401) {

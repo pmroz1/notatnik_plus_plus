@@ -15,11 +15,7 @@ import { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion';
 import { DocNode } from '../core/api.types';
 import { baseExtensions } from './editor-extensions';
 import { normalizeHref, isSafeHref } from './safe-url';
-import {
-  SlashCommand,
-  SlashMenuRenderer,
-  createSlashCommands,
-} from './slash-commands';
+import { SlashCommand, SlashMenuRenderer, createSlashCommands } from './slash-commands';
 
 interface FloatingPos {
   top: number;
@@ -156,8 +152,20 @@ export class TiptapEditorComponent implements OnDestroy, SlashMenuRenderer {
     { mark: 'bold', label: 'Bold', shortcut: 'Ctrl/Cmd+B', text: 'B', cls: 'font-bold' },
     { mark: 'italic', label: 'Italic', shortcut: 'Ctrl/Cmd+I', text: 'I', cls: 'italic' },
     { mark: 'underline', label: 'Underline', shortcut: 'Ctrl/Cmd+U', text: 'U', cls: 'underline' },
-    { mark: 'strike', label: 'Strikethrough', shortcut: 'Ctrl/Cmd+Shift+S', text: 'S', cls: 'line-through' },
-    { mark: 'code', label: 'Inline code', shortcut: 'Ctrl/Cmd+E', text: '</>', cls: 'font-mono text-xs' },
+    {
+      mark: 'strike',
+      label: 'Strikethrough',
+      shortcut: 'Ctrl/Cmd+Shift+S',
+      text: 'S',
+      cls: 'line-through',
+    },
+    {
+      mark: 'code',
+      label: 'Inline code',
+      shortcut: 'Ctrl/Cmd+E',
+      text: '</>',
+      cls: 'font-mono text-xs',
+    },
   ] as const;
 
   constructor() {
@@ -231,7 +239,13 @@ export class TiptapEditorComponent implements OnDestroy, SlashMenuRenderer {
   }
 
   focus(position: 'start' | 'end' = 'start'): void {
-    this.editor?.commands.focus(position);
+    if (!this.editor) {
+      return;
+    }
+    // Focus synchronously so keystrokes typed right after are not lost; the command then
+    // places the selection.
+    this.editor.view.focus();
+    this.editor.commands.focus(position);
   }
 
   // ----- selection toolbar -----
@@ -340,7 +354,8 @@ export class TiptapEditorComponent implements OnDestroy, SlashMenuRenderer {
     if (rect) {
       const menuHeight = 320;
       const below = rect.bottom + 6;
-      const top = below + menuHeight > window.innerHeight ? Math.max(8, rect.top - menuHeight - 6) : below;
+      const top =
+        below + menuHeight > window.innerHeight ? Math.max(8, rect.top - menuHeight - 6) : below;
       this.slashPos.set({ top, left: Math.max(8, Math.min(rect.left, window.innerWidth - 300)) });
     }
   }

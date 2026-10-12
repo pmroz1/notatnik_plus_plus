@@ -64,9 +64,17 @@ const SEARCH_DEBOUNCE_MS = 150;
           <span class="text-xs text-muted" aria-live="polite">Searching…</span>
         }
       </div>
-      <ul id="search-results" role="listbox" class="max-h-[60vh] overflow-y-auto p-2" aria-label="Results">
+      <ul
+        id="search-results"
+        role="listbox"
+        class="max-h-[60vh] overflow-y-auto p-2"
+        aria-label="Results"
+      >
         @if (!query().trim()) {
-          <li class="px-2 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-muted" role="presentation">
+          <li
+            class="px-2 pb-1 pt-2 text-xs font-medium uppercase tracking-wide text-muted"
+            role="presentation"
+          >
             Recent pages and actions
           </li>
         }
@@ -83,14 +91,19 @@ const SEARCH_DEBOUNCE_MS = 150;
             (keydown.enter)="choose(i)"
             data-testid="search-result"
           >
-            <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ item.icon ?? (item.kind === 'action' ? '›' : '📄') }}</span>
+            <span class="w-5 shrink-0 text-center" aria-hidden="true">{{
+              item.icon ?? (item.kind === 'action' ? '›' : '📄')
+            }}</span>
             <span class="min-w-0 flex-1">
               <span class="block truncate font-medium">{{ item.title }}</span>
               @if (item.snippet.length) {
                 <span class="line-clamp-2 block text-xs text-muted">
                   @for (part of item.snippet; track $index) {
                     @if (part.match) {
-                      <mark class="rounded-sm bg-amber-200/70 px-0.5 text-ink dark:bg-amber-500/30">{{ part.text }}</mark>
+                      <mark
+                        class="rounded-sm bg-amber-200/70 px-0.5 text-ink dark:bg-amber-500/30"
+                        >{{ part.text }}</mark
+                      >
                     } @else {
                       {{ part.text }}
                     }
@@ -148,9 +161,30 @@ export class SearchDialogComponent {
       snippet: [],
     }));
     const commands: ResultItem[] = [
-      { kind: 'action', id: 'new', title: 'Create a new page', icon: '＋', snippet: [], run: () => void this.actions.create() },
-      { kind: 'action', id: 'settings', title: 'Open settings', icon: '⚙', snippet: [], run: () => void this.router.navigate(['/settings']) },
-      { kind: 'action', id: 'trash', title: 'Open trash', icon: '🗑', snippet: [], run: () => void this.router.navigate(['/trash']) },
+      {
+        kind: 'action',
+        id: 'new',
+        title: 'Create a new page',
+        icon: '+',
+        snippet: [],
+        run: () => void this.actions.create(),
+      },
+      {
+        kind: 'action',
+        id: 'settings',
+        title: 'Open settings',
+        icon: '⚙',
+        snippet: [],
+        run: () => void this.router.navigate(['/settings']),
+      },
+      {
+        kind: 'action',
+        id: 'trash',
+        title: 'Open trash',
+        icon: '🗑',
+        snippet: [],
+        run: () => void this.router.navigate(['/trash']),
+      },
     ];
     return [...recent, ...commands];
   });
@@ -234,7 +268,9 @@ export class SearchDialogComponent {
 
   private scrollActive(): void {
     setTimeout(() =>
-      this.dialog().nativeElement.querySelector(`#search-opt-${this.active()}`)?.scrollIntoView({ block: 'nearest' }),
+      this.dialog()
+        .nativeElement.querySelector(`#search-opt-${this.active()}`)
+        ?.scrollIntoView({ block: 'nearest' }),
     );
   }
 

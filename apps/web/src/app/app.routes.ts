@@ -31,7 +31,8 @@ export const routes: Routes = [
       {
         path: 'settings',
         title: 'Settings · Notatnik++',
-        loadComponent: () => import('./settings/settings.component').then((m) => m.SettingsComponent),
+        loadComponent: () =>
+          import('./settings/settings.component').then((m) => m.SettingsComponent),
       },
     ],
   },

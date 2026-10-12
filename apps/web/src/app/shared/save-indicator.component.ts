@@ -26,7 +26,11 @@ const LABELS: Record<SaveStatus, string> = {
       {{ label() }}
     </span>
     @if (status() === 'error') {
-      <button type="button" class="ml-1 text-xs font-medium text-accent underline" (click)="retry.emit()">
+      <button
+        type="button"
+        class="ml-1 text-xs font-medium text-accent underline"
+        (click)="retry.emit()"
+      >
         Retry now
       </button>
     }

@@ -1,5 +1,8 @@
 @if (loadError(); as err) {
-  <div class="mx-auto flex max-w-xl flex-col items-center gap-3 px-6 py-24 text-center" role="alert">
+  <div
+    class="mx-auto flex max-w-xl flex-col items-center gap-3 px-6 py-24 text-center"
+    role="alert"
+  >
     <p class="text-lg font-semibold">This page could not be opened</p>
     <p class="text-sm text-muted">{{ err }}</p>
     <div class="flex gap-2">
@@ -17,15 +20,28 @@
 } @else {
   <div class="flex min-h-full flex-col">
     <!-- top bar -->
-    <div class="sticky top-0 z-20 flex h-11 items-center gap-2 border-b border-transparent bg-canvas/90 px-3 backdrop-blur sm:px-4">
-      <nav class="flex min-w-0 flex-1 items-center gap-1 text-sm text-muted" aria-label="Breadcrumb">
+    <div
+      class="sticky top-0 z-20 flex h-11 items-center gap-2 border-b border-transparent bg-canvas/90 px-3 backdrop-blur sm:px-4"
+    >
+      <nav
+        class="flex min-w-0 flex-1 items-center gap-1 text-sm text-muted"
+        aria-label="Breadcrumb"
+      >
         @for (crumb of breadcrumbs(); track crumb.id) {
-          <a [routerLink]="['/p', crumb.id]" class="max-w-40 truncate rounded px-1 hover:bg-hover hover:text-ink">
-            @if (crumb.icon) {<span aria-hidden="true">{{ crumb.icon }} </span>}{{ crumb.title }}
+          <a
+            [routerLink]="['/p', crumb.id]"
+            class="max-w-40 truncate rounded px-1 hover:bg-hover hover:text-ink"
+          >
+            @if (crumb.icon) {
+              <span aria-hidden="true">{{ crumb.icon }} </span>
+            }
+            {{ crumb.title }}
           </a>
           <span aria-hidden="true">/</span>
         }
-        <span class="truncate text-ink" aria-current="page">{{ displayTitle({ title: title() }) }}</span>
+        <span class="truncate text-ink" aria-current="page">{{
+          displayTitle({ title: title() })
+        }}</span>
       </nav>
       <app-save-indicator
         [status]="status()"
@@ -55,12 +71,26 @@
       </button>
       <ng-template #pageMenu>
         <div class="menu" cdkMenu>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.duplicate(pageId())">Duplicate</button>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="exportMarkdown()">Export as Markdown</button>
-          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="downloadDraft()">Download page JSON</button>
+          <button
+            class="menu-item"
+            cdkMenuItem
+            (cdkMenuItemTriggered)="actions.duplicate(pageId())"
+          >
+            Duplicate
+          </button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="exportMarkdown()">
+            Export as Markdown
+          </button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="downloadDraft()">
+            Download page JSON
+          </button>
           @if (!isTrashed()) {
             <hr class="my-1 border-line" />
-            <button class="menu-item text-danger" cdkMenuItem (cdkMenuItemTriggered)="actions.moveToTrash(pageId())">
+            <button
+              class="menu-item text-danger"
+              cdkMenuItem
+              (cdkMenuItemTriggered)="actions.moveToTrash(pageId())"
+            >
               Move to trash
             </button>
           }
@@ -80,16 +110,32 @@
         <div class="min-w-0 flex-1">
           <p class="font-semibold">This page was changed in another tab or device.</p>
           <p class="text-sm">
-            Autosave is paused so neither version is lost. Your version stays here and in a recovery draft in this browser.
+            Autosave is paused so neither version is lost. Your version stays here and in a recovery
+            draft in this browser.
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button type="button" class="btn btn-sm" (click)="copyDraftText()">Copy my version</button>
-          <button type="button" class="btn btn-sm" (click)="downloadDraft()">Download my version</button>
-          <button type="button" class="btn btn-sm" (click)="loadLatest()" data-testid="conflict-load-latest">
+          <button type="button" class="btn btn-sm" (click)="copyDraftText()">
+            Copy my version
+          </button>
+          <button type="button" class="btn btn-sm" (click)="downloadDraft()">
+            Download my version
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm"
+            (click)="loadLatest()"
+            data-testid="conflict-load-latest"
+          >
             Load latest…
           </button>
-          <button type="button" class="btn btn-sm btn-danger" [disabled]="busy()" (click)="keepMine()" data-testid="conflict-keep-mine">
+          <button
+            type="button"
+            class="btn btn-sm btn-danger"
+            [disabled]="busy()"
+            (click)="keepMine()"
+            data-testid="conflict-keep-mine"
+          >
             Keep mine…
           </button>
         </div>
@@ -98,7 +144,9 @@
 
     @if (status() === 'error' && controller()?.errorMessage(); as msg) {
       <div class="banner banner-danger" role="alert" data-testid="save-error-banner">
-        <span class="min-w-0 flex-1">Changes are not saved yet: {{ msg }}. They are kept in this browser.</span>
+        <span class="min-w-0 flex-1"
+          >Changes are not saved yet: {{ msg }}. They are kept in this browser.</span
+        >
         <button type="button" class="btn btn-sm" (click)="retrySave()">Retry now</button>
       </div>
     }
@@ -108,12 +156,17 @@
         <div class="min-w-0 flex-1">
           <p class="font-semibold">Unsaved draft found</p>
           <p class="text-sm">
-            This browser has unsaved changes from {{ draft.savedAt }}, but the page was changed since then.
+            This browser has unsaved changes from {{ draft.savedAt }}, but the page was changed
+            since then.
           </p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button type="button" class="btn btn-sm" (click)="downloadDraft(draft.doc)">Download draft</button>
-          <button type="button" class="btn btn-sm" (click)="copyDraftText(draft.doc)">Copy draft</button>
+          <button type="button" class="btn btn-sm" (click)="downloadDraft(draft.doc)">
+            Download draft
+          </button>
+          <button type="button" class="btn btn-sm" (click)="copyDraftText(draft.doc)">
+            Copy draft
+          </button>
           <button type="button" class="btn btn-sm" (click)="useStaleDraft()">Use draft…</button>
           <button type="button" class="btn btn-sm" (click)="discardStaleDraft()">Discard…</button>
         </div>
@@ -152,14 +205,21 @@
           >
             <div class="grid grid-cols-8 gap-1">
               @for (e of icons; track e) {
-                <button type="button" class="rounded p-1 text-xl hover:bg-hover" [attr.aria-label]="'Icon ' + e" (click)="setIcon(e)">
+                <button
+                  type="button"
+                  class="rounded p-1 text-xl hover:bg-hover"
+                  [attr.aria-label]="'Icon ' + e"
+                  (click)="setIcon(e)"
+                >
                   {{ e }}
                 </button>
               }
             </div>
             <div class="mt-2 flex justify-between">
               <button type="button" class="btn btn-sm" (click)="setIcon(null)">Remove icon</button>
-              <button type="button" class="btn btn-sm" (click)="iconPickerOpen.set(false)">Close</button>
+              <button type="button" class="btn btn-sm" (click)="iconPickerOpen.set(false)">
+                Close
+              </button>
             </div>
           </div>
         }
@@ -185,7 +245,12 @@
           <span class="inline-flex items-center gap-1 rounded-full bg-hover px-2 py-0.5 text-xs">
             #{{ tag }}
             @if (!isTrashed()) {
-              <button type="button" class="text-muted hover:text-ink" [attr.aria-label]="'Remove tag ' + tag" (click)="removeTag(tag)">
+              <button
+                type="button"
+                class="text-muted hover:text-ink"
+                [attr.aria-label]="'Remove tag ' + tag"
+                (click)="removeTag(tag)"
+              >
                 ✕
               </button>
             }
