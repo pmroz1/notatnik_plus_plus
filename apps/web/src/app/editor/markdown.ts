@@ -71,7 +71,7 @@ function table(node: DocNode): string {
       (cell.content ?? [])
         .map((p) => inline(p.content))
         .join(' ')
-        .replace(/\|/g, '\\|'),
+        .replace(/[\\|]/g, '\\$&'),
     ),
   );
   if (!rows.length) {
