@@ -1,0 +1,12 @@
+target
+**/node_modules
+apps/web/dist
+apps/web/.angular
+apps/web/test-results
+apps/web/playwright-report
+data
+**/*.db
+**/*.db-wal
+**/*.db-shm
+.env
+.git

@@ -1,0 +1,26 @@
+services:
+  notatnik:
+    build: .
+    image: notatnik-plus-plus:local
+    restart: unless-stopped
+    # Published on localhost only. Put an HTTPS reverse proxy in front before exposing it
+    # to other machines (see README "Remote access").
+    ports:
+      - "${NOTES_PUBLISH:-127.0.0.1:8080}:8080"
+    environment:
+      NOTES_COOKIE_SECURE: ${NOTES_COOKIE_SECURE:-false}
+      NOTES_SESSION_TTL_HOURS: ${NOTES_SESSION_TTL_HOURS:-336}
+      NOTES_ALLOWED_ORIGINS: ${NOTES_ALLOWED_ORIGINS:-}
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - notes-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  notes-data:
