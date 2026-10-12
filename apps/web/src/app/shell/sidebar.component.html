@@ -1,0 +1,256 @@
+<div class="flex h-full flex-col bg-panel text-sm">
+  <div class="flex h-12 shrink-0 items-center gap-2 px-3">
+    <span
+      class="flex h-6 w-6 items-center justify-center rounded bg-ink text-xs font-bold text-canvas"
+      aria-hidden="true"
+      >N</span
+    >
+    <div class="min-w-0 flex-1">
+      <p class="truncate font-semibold">Notatnik++</p>
+      <p class="truncate text-xs text-muted">{{ auth.username() }}</p>
+    </div>
+    <button
+      type="button"
+      class="icon-btn"
+      aria-label="Collapse sidebar"
+      title="Collapse sidebar (Ctrl/Cmd+\)"
+      (click)="collapse.emit()"
+    >
+      «
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-0.5 px-2 pb-2">
+    <button type="button" class="nav-item" (click)="openSearch.emit()" data-testid="open-search">
+      <span aria-hidden="true">⌕</span>
+      <span class="flex-1 text-left">Search</span>
+      <kbd class="kbd">Ctrl K</kbd>
+    </button>
+    <button type="button" class="nav-item" (click)="newPage()" data-testid="new-page">
+      <span aria-hidden="true">＋</span>
+      <span class="flex-1 text-left">New page</span>
+    </button>
+    <a routerLink="/settings" routerLinkActive="is-selected" class="nav-item" (click)="navigated.emit()">
+      <span aria-hidden="true">⚙</span>
+      <span class="flex-1">Settings</span>
+    </a>
+    <a routerLink="/trash" routerLinkActive="is-selected" class="nav-item" (click)="navigated.emit()" data-testid="trash-link">
+      <span aria-hidden="true">🗑</span>
+      <span class="flex-1">Trash</span>
+      @if (store.trash().length) {
+        <span class="text-xs text-muted">{{ store.trash().length }}</span>
+      }
+    </a>
+  </div>
+
+  <div class="min-h-0 flex-1 overflow-y-auto px-2 pb-6">
+    @if (store.favorites().length) {
+      <section class="mb-3" aria-labelledby="fav-heading">
+        <h2 id="fav-heading" class="section-heading">Favorites</h2>
+        <ul>
+          @for (p of store.favorites(); track p.id) {
+            <li>
+              <a
+                [routerLink]="['/p', p.id]"
+                class="nav-item"
+                [class.is-selected]="selectedId() === p.id"
+                (click)="navigated.emit()"
+              >
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                <span class="truncate">{{ title(p) }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (store.recent().length) {
+      <section class="mb-3" aria-labelledby="recent-heading">
+        <h2 id="recent-heading" class="section-heading">Recent</h2>
+        <ul>
+          @for (p of store.recent(); track p.id) {
+            <li>
+              <a
+                [routerLink]="['/p', p.id]"
+                class="nav-item"
+                [class.is-selected]="selectedId() === p.id"
+                (click)="navigated.emit()"
+              >
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                <span class="truncate">{{ title(p) }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (store.tags().length) {
+      <section class="mb-3" aria-labelledby="tags-heading">
+        <h2 id="tags-heading" class="section-heading">Tags</h2>
+        <div class="flex flex-wrap gap-1 px-2">
+          @for (t of store.tags(); track t.name) {
+            <button
+              type="button"
+              class="rounded-full border border-line px-2 py-0.5 text-xs hover:bg-hover"
+              [class.bg-accent]="store.tagFilter() === t.name"
+              [class.text-white]="store.tagFilter() === t.name"
+              [attr.aria-pressed]="store.tagFilter() === t.name"
+              (click)="setTag(t.name)"
+            >
+              #{{ t.name }} <span class="opacity-70">{{ t.count }}</span>
+            </button>
+          }
+        </div>
+        @if (store.tagFilter(); as tag) {
+          <ul class="mt-1" [attr.aria-label]="'Pages tagged ' + tag" data-testid="tag-results">
+            @for (p of store.taggedPages(); track p.id) {
+              <li>
+                <a
+                  [routerLink]="['/p', p.id]"
+                  class="nav-item"
+                  [class.is-selected]="selectedId() === p.id"
+                  (click)="navigated.emit()"
+                >
+                  <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ p.icon ?? '📄' }}</span>
+                  <span class="truncate">{{ title(p) }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+
+    <section aria-labelledby="pages-heading">
+      <div class="flex items-center">
+        <h2 id="pages-heading" class="section-heading flex-1">Pages</h2>
+        <button type="button" class="icon-btn h-6 w-6" aria-label="Add top-level page" title="Add page" (click)="newPage()">
+          ＋
+        </button>
+      </div>
+
+      @if (store.loading() && !store.loaded()) {
+        <p class="px-2 py-1 text-muted" aria-busy="true">Loading pages…</p>
+      } @else if (store.error() && !store.loaded()) {
+        <div class="px-2 py-1 text-danger" role="alert">
+          <p>{{ store.error() }}</p>
+          <button type="button" class="mt-1 underline" (click)="store.refresh()">Retry</button>
+        </div>
+      } @else if (!rows().length) {
+        <p class="px-2 py-1 text-muted">No pages yet.</p>
+      }
+
+      <ul data-tree aria-label="Page tree" data-testid="page-tree">
+        @for (node of rows(); track node.page.id) {
+          <li
+            class="tree-row group relative flex items-center rounded-md"
+            [class.is-selected]="selectedId() === node.page.id"
+            [class.drop-before]="dropHint()?.id === node.page.id && dropHint()?.position === 'before'"
+            [class.drop-after]="dropHint()?.id === node.page.id && dropHint()?.position === 'after'"
+            [class.drop-inside]="dropHint()?.id === node.page.id && dropHint()?.position === 'inside'"
+            [class.opacity-50]="dragId() === node.page.id"
+            [style.padding-left.px]="indent(node)"
+            [attr.data-page-id]="node.page.id"
+            draggable="true"
+            (dragstart)="onDragStart($event, node)"
+            (dragover)="onDragOver($event, node)"
+            (drop)="onDrop($event, node)"
+            (dragend)="onDragEnd()"
+            [cdkContextMenuTriggerFor]="rowMenu"
+            [cdkContextMenuTriggerData]="{ $implicit: node.page }"
+          >
+            @if (node.children.length) {
+              <button
+                type="button"
+                class="flex h-6 w-5 shrink-0 items-center justify-center rounded text-muted hover:bg-hover"
+                [attr.aria-label]="(store.isExpanded(node.page.id) ? 'Collapse ' : 'Expand ') + title(node.page)"
+                [attr.aria-expanded]="store.isExpanded(node.page.id)"
+                tabindex="-1"
+                (click)="toggle(node, $event)"
+              >
+                <span class="text-[10px] transition-transform" [class.rotate-90]="store.isExpanded(node.page.id)">▶</span>
+              </button>
+            } @else {
+              <span class="w-5 shrink-0"></span>
+            }
+
+            @if (renamingId() === node.page.id) {
+              <input
+                #renameInput
+                class="input my-0.5 h-7 min-w-0 flex-1 py-0"
+                aria-label="Page name"
+                [value]="renameValue()"
+                (input)="renameValue.set(renameInput.value)"
+                (keydown.enter)="commitRename()"
+                (keydown.escape)="cancelRename()"
+                (blur)="commitRename()"
+                data-testid="rename-input"
+              />
+            } @else {
+              <a
+                [routerLink]="['/p', node.page.id]"
+                class="flex h-7 min-w-0 flex-1 items-center gap-1.5 rounded px-1 outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                [attr.data-tree-link]="node.page.id"
+                [attr.aria-current]="selectedId() === node.page.id ? 'page' : null"
+                [attr.aria-expanded]="node.children.length ? store.isExpanded(node.page.id) : null"
+                [attr.aria-level]="node.depth + 1"
+                (keydown)="onRowKeydown($event, node)"
+                (dblclick)="startRename(node.page)"
+                (click)="navigated.emit()"
+              >
+                <span class="w-5 shrink-0 text-center" aria-hidden="true">{{ node.page.icon ?? '📄' }}</span>
+                <span class="truncate">{{ title(node.page) }}</span>
+              </a>
+              <div class="row-actions flex shrink-0 items-center pr-1">
+                <button
+                  type="button"
+                  class="icon-btn h-6 w-6"
+                  [attr.aria-label]="'Actions for ' + title(node.page)"
+                  title="More actions"
+                  [cdkMenuTriggerFor]="rowMenu"
+                  [cdkMenuTriggerData]="{ $implicit: node.page }"
+                  data-testid="row-menu"
+                >
+                  ⋯
+                </button>
+                <button
+                  type="button"
+                  class="icon-btn h-6 w-6"
+                  [attr.aria-label]="'Add subpage to ' + title(node.page)"
+                  title="Add subpage"
+                  (click)="newPage(node.page.id)"
+                >
+                  ＋
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    </section>
+  </div>
+</div>
+
+<ng-template #rowMenu let-page>
+  <div class="menu" cdkMenu data-testid="row-menu-panel">
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="startRename(page)">Rename <kbd class="kbd ml-auto">F2</kbd></button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="newPage(page.id)">Add subpage</button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.toggleFavorite(page.id)">
+      {{ page.isFavorite ? 'Remove from favorites' : 'Add to favorites' }}
+    </button>
+    <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.duplicate(page.id)">Duplicate</button>
+    <hr class="my-1 border-line" />
+    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'up')" (cdkMenuItemTriggered)="moveBy(page, 'up')">Move up</button>
+    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'down')" (cdkMenuItemTriggered)="moveBy(page, 'down')">Move down</button>
+    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'indent')" (cdkMenuItemTriggered)="moveBy(page, 'indent')">
+      Nest under previous
+    </button>
+    <button class="menu-item" cdkMenuItem [cdkMenuItemDisabled]="!canMove(page, 'outdent')" (cdkMenuItemTriggered)="moveBy(page, 'outdent')">
+      Move out one level
+    </button>
+    <hr class="my-1 border-line" />
+    <button class="menu-item text-danger" cdkMenuItem (cdkMenuItemTriggered)="actions.moveToTrash(page.id)">Move to trash</button>
+  </div>
+</ng-template>

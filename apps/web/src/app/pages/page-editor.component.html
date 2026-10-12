@@ -1,0 +1,223 @@
+@if (loadError(); as err) {
+  <div class="mx-auto flex max-w-xl flex-col items-center gap-3 px-6 py-24 text-center" role="alert">
+    <p class="text-lg font-semibold">This page could not be opened</p>
+    <p class="text-sm text-muted">{{ err }}</p>
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-primary" (click)="load()">Try again</button>
+      <a routerLink="/" class="btn">Go home</a>
+    </div>
+  </div>
+} @else if (!page()) {
+  <div class="mx-auto max-w-[780px] px-6 pt-20" aria-busy="true" aria-label="Loading page">
+    <div class="mb-6 h-10 w-2/3 animate-pulse rounded bg-hover"></div>
+    <div class="mb-3 h-4 w-full animate-pulse rounded bg-hover"></div>
+    <div class="mb-3 h-4 w-5/6 animate-pulse rounded bg-hover"></div>
+    <div class="h-4 w-4/6 animate-pulse rounded bg-hover"></div>
+  </div>
+} @else {
+  <div class="flex min-h-full flex-col">
+    <!-- top bar -->
+    <div class="sticky top-0 z-20 flex h-11 items-center gap-2 border-b border-transparent bg-canvas/90 px-3 backdrop-blur sm:px-4">
+      <nav class="flex min-w-0 flex-1 items-center gap-1 text-sm text-muted" aria-label="Breadcrumb">
+        @for (crumb of breadcrumbs(); track crumb.id) {
+          <a [routerLink]="['/p', crumb.id]" class="max-w-40 truncate rounded px-1 hover:bg-hover hover:text-ink">
+            @if (crumb.icon) {<span aria-hidden="true">{{ crumb.icon }} </span>}{{ crumb.title }}
+          </a>
+          <span aria-hidden="true">/</span>
+        }
+        <span class="truncate text-ink" aria-current="page">{{ displayTitle({ title: title() }) }}</span>
+      </nav>
+      <app-save-indicator
+        [status]="status()"
+        [detail]="controller()?.errorMessage() ?? null"
+        (retry)="retrySave()"
+      />
+      <button
+        type="button"
+        class="icon-btn"
+        [attr.aria-pressed]="isFavorite()"
+        [attr.aria-label]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'"
+        [title]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'"
+        (click)="actions.toggleFavorite(pageId())"
+        data-testid="favorite-toggle"
+      >
+        <span [class.text-amber-500]="isFavorite()">{{ isFavorite() ? '★' : '☆' }}</span>
+      </button>
+      <button
+        type="button"
+        class="icon-btn"
+        aria-label="Page actions"
+        title="Page actions"
+        [cdkMenuTriggerFor]="pageMenu"
+        data-testid="page-menu"
+      >
+        ⋯
+      </button>
+      <ng-template #pageMenu>
+        <div class="menu" cdkMenu>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="actions.duplicate(pageId())">Duplicate</button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="exportMarkdown()">Export as Markdown</button>
+          <button class="menu-item" cdkMenuItem (cdkMenuItemTriggered)="downloadDraft()">Download page JSON</button>
+          @if (!isTrashed()) {
+            <hr class="my-1 border-line" />
+            <button class="menu-item text-danger" cdkMenuItem (cdkMenuItemTriggered)="actions.moveToTrash(pageId())">
+              Move to trash
+            </button>
+          }
+        </div>
+      </ng-template>
+    </div>
+
+    @if (isTrashed()) {
+      <div class="banner banner-warn" role="status" data-testid="trash-banner">
+        <span>This page is in the trash and is read-only.</span>
+        <button type="button" class="btn btn-sm" (click)="restoreFromTrash()">Restore</button>
+      </div>
+    }
+
+    @if (status() === 'conflict') {
+      <div class="banner banner-danger" role="alert" data-testid="conflict-banner">
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold">This page was changed in another tab or device.</p>
+          <p class="text-sm">
+            Autosave is paused so neither version is lost. Your version stays here and in a recovery draft in this browser.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="btn btn-sm" (click)="copyDraftText()">Copy my version</button>
+          <button type="button" class="btn btn-sm" (click)="downloadDraft()">Download my version</button>
+          <button type="button" class="btn btn-sm" (click)="loadLatest()" data-testid="conflict-load-latest">
+            Load latest…
+          </button>
+          <button type="button" class="btn btn-sm btn-danger" [disabled]="busy()" (click)="keepMine()" data-testid="conflict-keep-mine">
+            Keep mine…
+          </button>
+        </div>
+      </div>
+    }
+
+    @if (status() === 'error' && controller()?.errorMessage(); as msg) {
+      <div class="banner banner-danger" role="alert" data-testid="save-error-banner">
+        <span class="min-w-0 flex-1">Changes are not saved yet: {{ msg }}. They are kept in this browser.</span>
+        <button type="button" class="btn btn-sm" (click)="retrySave()">Retry now</button>
+      </div>
+    }
+
+    @if (staleDraft(); as draft) {
+      <div class="banner banner-warn" role="alert" data-testid="stale-draft-banner">
+        <div class="min-w-0 flex-1">
+          <p class="font-semibold">Unsaved draft found</p>
+          <p class="text-sm">
+            This browser has unsaved changes from {{ draft.savedAt }}, but the page was changed since then.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="btn btn-sm" (click)="downloadDraft(draft.doc)">Download draft</button>
+          <button type="button" class="btn btn-sm" (click)="copyDraftText(draft.doc)">Copy draft</button>
+          <button type="button" class="btn btn-sm" (click)="useStaleDraft()">Use draft…</button>
+          <button type="button" class="btn btn-sm" (click)="discardStaleDraft()">Discard…</button>
+        </div>
+      </div>
+    }
+
+    <article class="mx-auto w-full max-w-[800px] flex-1 px-5 pb-40 pt-10 sm:px-12">
+      <div class="group relative mb-2">
+        <div class="mb-2 flex h-14 items-end gap-2">
+          @if (icon(); as ic) {
+            <button
+              type="button"
+              class="rounded-lg text-5xl leading-none hover:bg-hover"
+              aria-label="Change icon"
+              [disabled]="isTrashed()"
+              (click)="iconPickerOpen.set(!iconPickerOpen())"
+            >
+              {{ ic }}
+            </button>
+          } @else if (!isTrashed()) {
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm opacity-60 focus:opacity-100 group-hover:opacity-100"
+              (click)="iconPickerOpen.set(!iconPickerOpen())"
+            >
+              ☺ Add icon
+            </button>
+          }
+        </div>
+        @if (iconPickerOpen()) {
+          <div
+            class="absolute left-0 top-16 z-30 w-72 rounded-lg border border-line bg-panel p-2 shadow-xl"
+            role="dialog"
+            aria-label="Choose an icon"
+            (keydown.escape)="iconPickerOpen.set(false)"
+          >
+            <div class="grid grid-cols-8 gap-1">
+              @for (e of icons; track e) {
+                <button type="button" class="rounded p-1 text-xl hover:bg-hover" [attr.aria-label]="'Icon ' + e" (click)="setIcon(e)">
+                  {{ e }}
+                </button>
+              }
+            </div>
+            <div class="mt-2 flex justify-between">
+              <button type="button" class="btn btn-sm" (click)="setIcon(null)">Remove icon</button>
+              <button type="button" class="btn btn-sm" (click)="iconPickerOpen.set(false)">Close</button>
+            </div>
+          </div>
+        }
+        <label class="sr-only" for="page-title">Page title</label>
+        <textarea
+          #titleInput
+          id="page-title"
+          rows="1"
+          class="page-title w-full resize-none overflow-hidden bg-transparent text-4xl font-bold leading-tight outline-none placeholder:text-muted/60"
+          placeholder="Untitled"
+          maxlength="500"
+          [value]="title()"
+          [readOnly]="isTrashed()"
+          (input)="onTitleInput(titleInput.value)"
+          (keydown)="onTitleKeydown($event)"
+          (blur)="flushTitle()"
+          data-testid="page-title"
+        ></textarea>
+      </div>
+
+      <div class="mb-6 flex flex-wrap items-center gap-1.5" aria-label="Tags">
+        @for (tag of tags(); track tag) {
+          <span class="inline-flex items-center gap-1 rounded-full bg-hover px-2 py-0.5 text-xs">
+            #{{ tag }}
+            @if (!isTrashed()) {
+              <button type="button" class="text-muted hover:text-ink" [attr.aria-label]="'Remove tag ' + tag" (click)="removeTag(tag)">
+                ✕
+              </button>
+            }
+          </span>
+        }
+        @if (!isTrashed()) {
+          <label class="sr-only" for="tag-input">Add tag</label>
+          <input
+            #tagInput
+            id="tag-input"
+            class="w-28 rounded bg-transparent px-1 py-0.5 text-xs text-muted outline-none placeholder:text-muted/70 focus:bg-hover"
+            placeholder="+ Add tag"
+            maxlength="40"
+            [value]="tagDraft()"
+            (input)="tagDraft.set(tagInput.value)"
+            (keydown.enter)="addTag()"
+            data-testid="tag-input"
+          />
+        }
+      </div>
+
+      @if (initialDoc(); as doc) {
+        @for (k of [editorKey()]; track k) {
+          <app-tiptap-editor
+            #editor
+            [content]="doc"
+            [editable]="!isTrashed()"
+            (ready)="onEditorReady()"
+            (changed)="onEditorChanged()"
+          />
+        }
+      }
+    </article>
+  </div>
+}

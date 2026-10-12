@@ -1,13 +1,17 @@
 {
-  "name": "web",
+  "name": "notatnik-web",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint"
+    "test": "ng test --watch=false",
+    "lint": "ng lint",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,html,css}\" \"e2e/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,html,css}\" \"e2e/**/*.ts\"",
+    "e2e": "playwright test"
   },
   "private": true,
   "packageManager": "npm@10.9.9",
